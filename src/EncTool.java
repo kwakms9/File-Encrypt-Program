@@ -28,67 +28,6 @@ public class EncTool {
 	static String keyStore;
 	static String keyName;
 
-	public static void main(String[] args) {
-/*********************************파일변환실 버퍼용 파일 필요 같은이름으로 바로 덮으면 정상으로 안됨******************************************************/
-		// Handle the command line arguments
-	if(true) {//test
-		//hexKey = args[1];
-		inFile = "C:\\Users\\hp-1\\Desktop\\영교원\\21.zip";
-		outFile = "C:\\Users\\hp-1\\Desktop\\영교원\\22.zip";
-		decryptAESCTR();
-	} else if (args.length == 4 && args[0].equals("-encAESCTR") && args[1].length() == 32) {
-			hexKey = args[1];
-			inFile = args[2];
-			outFile = args[3];
-			encryptAESCTR();
-		} else if (args.length == 4 && args[0].equals("-decAESCTR") && args[1].length() == 32) {
-			hexKey = args[1];
-			inFile = args[2];
-			outFile = args[3];
-			decryptAESCTR();
-		} else if (args.length == 4 && args[0].equals("-encAESCCM") && args[1].length() == 32) {
-			hexKey = args[1];
-			inFile = args[2];
-			outFile = args[3];
-			encryptAESCCM();
-		} else if (args.length == 4 && args[0].equals("-decAESCCM") && args[1].length() == 32) {
-			hexKey = args[1];
-			inFile = args[2];
-			outFile = args[3];
-			decryptAESCCM();
-		} else if (args.length == 5 && args[0].equals("-encRSA")) {
-			keyStore = args[1];
-			keyName = args[2];
-			inFile = args[3];
-			outFile = args[4];
-			encryptRSA();
-		} else if (args.length == 5 && args[0].equals("-decRSA")) {
-			keyStore = args[1];
-			keyName = args[2];
-			inFile = args[3];
-			outFile = args[4];
-			decryptRSA();
-		} else if (args.length == 1 && args[0].equals("-genAES")) {
-			generateKey();
-		} else {
-			System.out.println("This is a simple program to encrypt and decrypt files");
-			System.out.println("Usage: ");
-			System.out.println(
-					"    -encAESCTR <key:128 bits in as hex> <inputFile> <outputFile>  AES CTR mode encrypt");
-			System.out.println(
-					"    -decAESCTR <key:128 bits in as hex> <inputFile> <outputFile>  AES CTR mode decrypt");
-			System.out.println(
-					"    -encAESCCM <key:128 bits in as hex> <inputFile> <outputFile>  AES CCM mode encrypt");
-			System.out.println(
-					"    -decAESCCM <key:128 bits in as hex> <inputFile> <outputFile>  AES CCM modedecrypt");
-			System.out.println(
-					"    -encRSA <keyStore> <keyName> <inputFile> <outputFile>         RSA encrypt");
-			System.out.println(
-					"    -decRSA <keyStore> <keyName> <inputFile> <outputFile>         RSA decrypt");
-			System.out.println("    -genAES     generate an AES key");
-		}
-	}
-
 	private static void encryptRSA() {
 		try {
 			// Get the public key from the keyStore and set up the
