@@ -1,7 +1,12 @@
 import java.util.Calendar;
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -125,8 +130,10 @@ public class calender {
 
 	  }
 	  
-
-    public static void FileCreationDate(){// 파일생성날짜 메소드
+	 
+	 String creatDate;
+	  
+    public void FileCreationDate(){// 파일생성날짜 메소드
 
 		   File file = new File( EncTool.inFile ); 
 
@@ -138,14 +145,38 @@ public class calender {
 			    String pattern = "yyyy-MM-dd HH:mm:ss";
 			    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 				
-			    String formatted = simpleDateFormat.format( new Date( time.toMillis() ) );
+			    String creatDate = simpleDateFormat.format( new Date( time.toMillis() ) );
 
-			    System.out.println( file + " 는 " + formatted + "에 암호화 되었습니다");
+			    System.out.println( file + " 는 " + creatDate + "에 암호화 되었습니다");
 			} catch (IOException e) { 
 			    e.printStackTrace();
 			}
 		}
-	
-			
-		
+	  
+    public void filesave(String[] args) throws IOException{//파일저장 메소드
+        BufferedReader in = null;
+    	PrintWriter out = null;
+    	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
+    	
+    	try {
+    		String filename = EncTool.inFile;
+    		String CreatDate = creatDate;
+    		out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"data.bin")));
+    		String l;
+    		out.write(filename + "\n");
+    		out.write(CreatDate);
+    		out.flush();
+    		in = new BufferedReader(new FileReader(savePath + "\\data.bin"));
+    		while ((l = in.readLine()) != null) {
+    			System.out.println(l);
+    		}
+    	} finally {
+    		if (in != null) {
+    			in.close();
+    		} if (out != null) {
+    			out.close();
+    		}
+    	}
+    }
+    	
 }
