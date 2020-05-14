@@ -13,11 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Random;
 
 public class UserLogin {
 	private String username = null; // null 이면 logout 상태
-	private String password = null;
+	//private String password = null;
 	private String savePath = System.getProperty("user.home") + "\\Documents\\FileEncrytProgram";//정보저장 경로
 	BufferedReader in = null;
 	PrintWriter out = null;//out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.bin")));//true없으므로 덮어쓰기
@@ -184,25 +185,41 @@ public class UserLogin {
 		}
 	}
 	
-	public String sendVerificationCode(String email) {	//찾을 id 입력받은후
+	public String VerificationCode(String id) {	//찾을 id 입력받은후
 		System.out.println("이메일로 인증코드발송");
 		SendEmail mail = new SendEmail();
+		String email = findEmail(id);
 		String verificationCode="";
 		
-		for(int j=0;j<6;j++) {
-		verificationCode+=""+(int)Math.random()*10;
+		if(email != null ) {//이메일 일치 여부 확인
+			for(int j=0;j<6;j++) {
+			verificationCode+=""+(int)Math.random()*10;
+			}
+			mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
+			System.out.println("당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
+//			{	//일단 S1을 인증 GUI로 칭함
+//				long time1 = System.currentTimeMillis();
+//				S1 s =new S1();
+//				while((System.currentTimeMillis()-time1)<10*1000 && !s.flag) {
+//					if((System.currentTimeMillis()-time1)==5000) {s.flag=true;}
+//				} 
+//				s.dis(); //S1클래스에 dispose메소드 구현하기 flag
+//			}
+			return verificationCode;
 		}
+		System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
+		return null;
 		
-		mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
-		System.out.println("당신의 이메일로 인증코드가 전송되었습니다.");
-		return verificationCode;
 	}
 	
+	public void comfirmCode(String verificationCode) {		/*******GUi에서 인증확인구연하기*********/
+		
+	}
 	public void findPw(String id) {
 		String email = findEmail(id);
 		String code;
 		if(email != null ) {//이메일 일치 여부 확인
-			code=sendVerificationCode(email);
+			code=VerificationCode(email);
 		}else {
 			System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
 		}
