@@ -153,30 +153,42 @@ public class calender {
 			}
 		}
 	  
-    public void filesave(String[] args) throws IOException{//파일저장 메소드
-        BufferedReader in = null;
+    public void filesave() {//파일저장 메소드
+        
     	PrintWriter out = null;
     	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
     	
     	try {
     		String filename = EncTool.inFile;
     		String CreatDate = creatDate;
-    		out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"data.bin")));
-    		String l;
-    		out.write(filename + "\n");
+    		out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"data.txt")));
+      		out.write(filename + "\n");
     		out.write(CreatDate);
     		out.flush();
-    		in = new BufferedReader(new FileReader(savePath + "\\data.bin"));
-    		while ((l = in.readLine()) != null) {
-    			System.out.println(l);
     		}
-    	} finally {
-    		if (in != null) {
-    			in.close();
-    		} if (out != null) {
-    			out.close();
-    		}
+    		catch(IOException e) {e.printStackTrace();}
+    	 finally {
+    		 if (out != null)  {
+     			out.close();
+     		  }
+    		} 
     	}
-    }
-    	
+    
+    
+    public void Enfilelist() {//암호화된 파일 전체 출력 메소드
+    	BufferedReader in = null;
+    	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
+    	try {
+    	in = new BufferedReader(new FileReader(savePath + "\\list.txt"));
+    	String l;
+		while ((l = in.readLine()) != null) {
+			System.out.println(l);
+		  }
+    	}
+    	catch(IOException e) {e.printStackTrace();}
+    	}
+
 }
+    
+    
+
