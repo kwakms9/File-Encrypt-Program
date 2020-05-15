@@ -1,3 +1,12 @@
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -15,6 +24,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Random;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 
 public class UserLogin {
 	private String username = null; // null 이면 logout 상태
@@ -185,7 +202,7 @@ public class UserLogin {
 		}
 	}
 	
-	public String VerificationCode(String id) {	//찾을 id 입력받은후
+	public boolean VerificationCode(String id) {	//찾을 id 입력받은후
 		System.out.println("이메일로 인증코드발송");
 		SendEmail mail = new SendEmail();
 		String email = findEmail(id);
@@ -197,32 +214,149 @@ public class UserLogin {
 			}
 			mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
 			System.out.println("당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
-//			{	//일단 S1을 인증 GUI로 칭함
-//				long time1 = System.currentTimeMillis();
-//				S1 s =new S1();
-//				while((System.currentTimeMillis()-time1)<10*1000 && !s.flag) {
-//					if((System.currentTimeMillis()-time1)==5000) {s.flag=true;}
-//				} 
-//				s.dis(); //S1클래스에 dispose메소드 구현하기 flag
-//			}
-			return verificationCode;
+			CodeFrame confirmWindow =new CodeFrame(verificationCode);
+			verificationCode = null;	//인증코드 초기화
+			if(!frameTimer(180,confirmWindow)) {	//시간 내에 입력하지 못 했을 경우 3분
+				JOptionPane.showMessageDialog(null, "인증코드 유효시간이 초과하였습니다.");
+				System.out.println("인증코드 유효기간이 초과하였습니다.");
+				return false;	// fail
+			}System.out.println("finish");
+			return true;	//success
 		}
 		System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
-		return null;
+		return false;
 		
 	}
 	
 	public void comfirmCode(String verificationCode) {		/*******GUi에서 인증확인구연하기*********/
 		
 	}
-	public void findPw(String id) {
-		String email = findEmail(id);
-		String code;
-		if(email != null ) {//이메일 일치 여부 확인
-			code=VerificationCode(email);
-		}else {
-			System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
-		}
+	
+	public boolean frameTimer(int sec,CodeFrame window) {
+		long starTime;
+		SimpleDateFormat format = new SimpleDateFormat ( "mm:ss");
+		int currentTime;
+		starTime=System.currentTimeMillis();
+		do {
+			currentTime = (int)(System.currentTimeMillis()-starTime)/1000;
+			window.time.setText("  남은시간 "+format.format((sec-currentTime)*1000));
+			System.out.println(format.format((sec-currentTime)*1000)+"남음"+window.closeWin);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}while(currentTime<=sec&&!(window.closeWin));	//종료버튼 누를시
+		window.dispose();
+		return window.closeWin;
 	}
 	
+//	public void findPw(String id) {
+//		String email = findEmail(id);
+//		String code;
+//		if(email != null ) {//이메일 일치 여부 확인
+//			code=VerificationCode(email);
+//		}else {
+//			System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
+//		}
+//	}
+	
+	class CodeFrame extends JFrame implements ActionListener, KeyListener, WindowListener{	//인증코드 창
+		private boolean closeWin = false;
+		JLabel text = new JLabel("인증코드:");
+		JLabel time = new JLabel("");
+		JTextField textCode = new JTextField(10);
+		JPanel panel = new JPanel();
+		JButton confirm = new JButton("확인");
+		private String verificationCode;
+		
+		
+		CodeFrame(String verificationCode){
+			this.verificationCode = verificationCode;
+			panel.add(text);
+			panel.add(textCode);
+			panel.add(confirm);
+			
+			this.setLayout(new GridLayout(3,3));
+			this.add(time);
+			this.add(panel);
+			this.pack();
+			this.setSize(300, 170);
+			//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setVisible(true);
+			this.setLocationRelativeTo(null);
+			this.setTitle("인증코드 확인");
+			
+			confirm.addActionListener(this);
+			confirm.addKeyListener(this);
+			textCode.addKeyListener(this);   
+			addWindowListener(this);
+		} 
+		
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if(textCode.getText().equals(verificationCode)) {
+					dispose();
+					JOptionPane.showMessageDialog(null, "인증성공!");
+					closeWin = true;
+				}else {
+					JOptionPane.showMessageDialog(null, "인증번호가 일치하지 않습니다.");
+				}
+			}
+		}
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getSource()==confirm) {	//press confirm button
+				if(textCode.getText().equals(verificationCode)) {
+					dispose();
+					JOptionPane.showMessageDialog(null, "인증성공!");
+					closeWin = true;
+				}else {
+					JOptionPane.showMessageDialog(null, "인증번호가 일치하지 않습니다.");
+				}
+			}
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO Auto-generated method stub	
+		}
+		@Override
+		public void windowClosing(WindowEvent e) {
+			closeWin=true;
+		}
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO Auto-generated method stub
+		}
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub	
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub	
+		}
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub	
+		}
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub	
+		}
+	}
 }

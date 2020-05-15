@@ -9,14 +9,9 @@ public class testmain {
 
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("user.home")+"\\Documents");
-		SimpleDateFormat format1 = new SimpleDateFormat ( "mm:ss");
-		long time1 = System.currentTimeMillis();System.out.println(format1.format(System.currentTimeMillis()));
-		S1 s =new S1();while((System.currentTimeMillis()-time1)<10*1000 && !s.flag) {
-			if((System.currentTimeMillis()-time1)==5000) {s.flag=true;}
-			System.out.println((System.currentTimeMillis()-time1)/1000);
-		} s.dis();
-		System.out.println(format1.format(System.currentTimeMillis()));
-		new UserLogin();
+		//CodeThread a = new CodeThread(10);
+		//a.start();
+		new UserLogin().VerificationCode("");
 	}
 	
 /*
@@ -43,6 +38,14 @@ public static void main(String[] args) throws IOException {
 	out.close(); } }
 }*/
 }
+/**************인증시간 테스트
+SimpleDateFormat format1 = new SimpleDateFormat ( "mm:ss");
+long time1 = System.currentTimeMillis();System.out.println(format1.format(System.currentTimeMillis()));
+S1 s =new S1();while((System.currentTimeMillis()-time1)<10*1000 && !s.flag) {
+	if((System.currentTimeMillis()-time1)==5000) {s.flag=true;}
+} s.dis();
+System.out.println(format1.format(System.currentTimeMillis()));
+
 class S1 extends JFrame {
 	boolean flag = false;
 	JPanel panel = new JPanel();
@@ -68,4 +71,4 @@ S1(){
     
     this.setTitle("Google Email sender");
     
-}void dis(){this.dispose();}}   
+}void dis(){this.dispose();}}   */
