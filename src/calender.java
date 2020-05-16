@@ -153,7 +153,7 @@ public class calender {
 			}
 		}
 	  
-    public void filesave() {//파일저장 메소드
+    public void filesave() {//암호파일저장 메소드
         
     	PrintWriter out = null;
     	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
@@ -175,7 +175,7 @@ public class calender {
     	}
     
     
-    public void Enfilelist() {//암호화된 파일 전체 출력 메소드
+    public void Enfilelist() {//암호파일 전체 출력 메소드
     	BufferedReader in = null;
     	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
     	try {
