@@ -5,8 +5,12 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedInputStream;
@@ -475,8 +479,8 @@ public class UserLogin {
 		}
 
 	}
-	
-	class SignUpFrame extends JFrame implements ActionListener, KeyListener{	//인증코드 창
+	public void ss() { new SignUpFrame(); }
+	class SignUpFrame extends JFrame implements ActionListener, KeyListener, MouseListener, FocusListener{	//인증코드 창
 		private JLabel idLabel = new JLabel("아이디: ");
 		private JLabel pwLabel = new JLabel("비밀번호:");
 		private JLabel checkPwLabel = new JLabel("비밀번호 확인:");
@@ -494,6 +498,7 @@ public class UserLogin {
 		private JPanel emailPanel = new JPanel();//email
 		private JPanel signbtPanel = new JPanel();//sign
 		
+		private String useId;
 		private boolean existId = true;	//false 이여야 중복되지 않는다는 뜻!
 		private boolean comparePw = false;
 		SignUpFrame(){
@@ -531,7 +536,8 @@ public class UserLogin {
 			this.add(emailPanel);
 			this.add(signbtPanel);
 			
-			email.addActionListener(this);
+			id.addFocusListener(this);
+			email.addMouseListener(this);
 			checkId.addActionListener(this);
 			signUpBt.addActionListener(this);
 			
@@ -544,22 +550,29 @@ public class UserLogin {
 			
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource()==email) { email.setText("");	}
-			
 			if(e.getSource()==checkId) {
-				existId = idOrPwCheck(id.getText());	//중복될경우 true
-				if(!existId) {	//일치치하지 않을때
-					JOptionPane.showMessageDialog(null, "사용 가능한 아이디입니다!");
-				}else { JOptionPane.showMessageDialog(null, "이미 존재하는 아이디입니다!"); }
+				if(!id.getText().equals("")) {
+					useId = id.getText();
+					existId = idOrPwCheck(useId);	//중복될경우 true
+					if(!existId) {	//일치치하지 않을때
+						JOptionPane.showMessageDialog(null, "사용 가능한 아이디입니다!");
+						checkId.setText("사용가능");
+						checkId.setEnabled(false);
+					}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
+				}else {	JOptionPane.showMessageDialog(null, "아이디를 입력해주십시오!");	}
 			}
 			
 			if(e.getSource()==signUpBt) {
 				if(!existId) {
-					if(pwField.getText().equals(repwField.getText())) {
-						signUp(id.getText(),pwField.getText(),email.getText());
-					}else {	JOptionPane.showMessageDialog(null, "두 비밀번호가 일치하지 않습니다!");	}
-				}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
-			}
+					if(!pwField.getText().equals("")) {
+						if(pwField.getText().equals(repwField.getText())) {
+							signUp(id.getText(),pwField.getText(),email.getText());
+							JOptionPane.showMessageDialog(null, "회원가입 완료!");
+							this.dispose();
+						}else {	JOptionPane.showMessageDialog(null, "두 비밀번호가 일치하지 않습니다!");	}
+					}else {	JOptionPane.showMessageDialog(null, "비밀번호를 입력하십시오!");	}
+			}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
+				}
 			//JOptionPane.showMessageDialog(null, "비밀번호를 입력하십시오.");
 		}
 
@@ -578,6 +591,54 @@ public class UserLogin {
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if(e.getSource()==email) {
+				email.setText("");	
+				}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void focusGained(FocusEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			if(e.getSource()==id && !existId) {
+				if(!useId.equals(id.getText())) {//중복검사후 
+					existId = true;
+					checkId.setText("중복검사");
+					checkId.setEnabled(true);
+				}
+			}
 		}
 
 	}
