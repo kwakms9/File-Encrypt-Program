@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 
 public class UserLogin {
@@ -70,6 +73,7 @@ public class UserLogin {
 	
 	public void fileLoad() {
 		try {
+			userData =null;	//기존에 있던 데이터 지우기
 			BufferedReader in = null;
 			in = new BufferedReader(new FileReader(savePath+"\\data.txt"));
 			
@@ -106,29 +110,13 @@ public class UserLogin {
 		}
 	}
 	
-	
-	public boolean signUp(String id,String pw) {//가입시 중복체크밑 정보입력 
-		if(!idOrPwCheck(id)) {	//중복이 아닐경우
-			//this.username=id;
-			//this.password=pw;
-			savefile(id+divUnit+pw);
-			fileLoad();	//reload file
-			return true;
-		}else {
-			System.out.println("중복된 ID");
-		}
-		return false;
-	}
-	
-	public boolean signUp(String id,String pw,String email) {//가입시 중복체크밑 정보입력  @이메일에 따라 오버로딩
-		if(!idOrPwCheck(id)) {	//중복이 아닐경우
+	public void signUp(String id,String pw,String email) {  //@이메일에 따라 저장
+		if(email.contains("@")) {
 			savefile(id+divUnit+pw+divUnit+email);
-			fileLoad();	//reload file
-			return true;
 		}else {
-			System.out.println("중복된 ID");
+			savefile(id+divUnit+pw);
 		}
-		return false;
+			fileLoad();	//reload file
 	}
 	
 	
@@ -228,9 +216,11 @@ public class UserLogin {
 			SendEmail mail = new SendEmail();
 			mail.sender(email, "File-Encrypt-Program - your ID", "당신의 아이디는 "+id+" 입니다");
 			System.out.println("당신의 이메일로 아이디가 전송되었습니다.");
+			JOptionPane.showMessageDialog(null, "당신의 이메일로 아이디가 전송되었습니다.");
 			return;
 		}else {
 		System.out.println("해당 이메일로 가입된 계정이 없습니다.");
+		JOptionPane.showMessageDialog(null, "해당 이메일로 가입된 계정이 없습니다.");
 		}
 	}
 	
@@ -256,6 +246,7 @@ public class UserLogin {
 			}
 			mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
 			System.out.println("당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
+			JOptionPane.showMessageDialog(null, "당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
 			CodeFrame confirmWindow =new CodeFrame(verificationCode);
 			verificationCode = null;	//인증코드 초기화
 			
@@ -268,6 +259,7 @@ public class UserLogin {
 			return true;	//success
 		}
 		System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
+		JOptionPane.showMessageDialog(null, "해당 아이디에 등록된 이메일이 없습니다.");
 		return false;
 		
 	}
@@ -314,15 +306,16 @@ public class UserLogin {
 			panel.add(textCode);
 			panel.add(confirm);
 			
-			this.setLayout(new GridLayout(3,3));
+			this.setLayout(new GridLayout(3,1));
 			this.add(time);
 			this.add(panel);
-			this.pack();
+			//this.pack();
 			this.setSize(300, 170);
 			//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setVisible(true);
 			this.setLocationRelativeTo(null);
 			this.setTitle("인증코드 확인");
+			this.setResizable(false);
 			
 			confirm.addActionListener(this);
 			confirm.addKeyListener(this);
@@ -397,35 +390,42 @@ public class UserLogin {
 			// TODO Auto-generated method stub	
 		}
 	}
-	
+	public void aa() { new NewPassword("sdf"); }
+	public void tmp() { new CodeFrame("1"); }
 	class NewPassword extends JFrame implements ActionListener, KeyListener{	//인증코드 창
-		JLabel text1 = new JLabel("새 비밀번호:");
-		JLabel text2 = new JLabel("비밀번호 확인:");
-		JPasswordField pwtext = new JPasswordField(10);
-		JPasswordField repwtext = new JPasswordField(10);
-		JPanel panel = new JPanel(new GridLayout(2,2));
-		JButton complete = new JButton("완료");
-		String id;
+		private JLabel text1 = new JLabel("   새 비밀번호: ");
+		private JLabel text2 = new JLabel("비밀번호 확인:");
+		private JPasswordField pwtext = new JPasswordField(12);
+		private JPasswordField repwtext = new JPasswordField(12);
+		private JPanel panel = new JPanel();
+		private JButton complete = new JButton("완료");
+		private String id;
+		private JPanel panel2 = new JPanel();
+		private JPanel panelBu = new JPanel();
 		
 		NewPassword(String id){
 			this.id = id;
+			panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 15));
 			panel.add(text1);
 			panel.add(pwtext);
-			panel.add(text2);
-			panel.add(repwtext);
+			panel2.add(text2, new FlowLayout());
+			panel2.add(repwtext, new FlowLayout());
+			this.setLayout(new GridLayout(3,0));
+			this.add(panel);getContentPane().add(panel2);
+			this.add(panelBu);
+			panelBu.add(complete);
+
+			pwtext.addKeyListener(this);
+			repwtext.addKeyListener(this);
+			complete.addKeyListener(this);
+			complete.addActionListener(this);
 			
-			this.setLayout(new GridLayout(3,3));
-			//this.add();
-			this.add(panel);
-			this.add(complete,BorderLayout.LINE_END);
-			this.pack();
-			this.setSize(300, 200);
+			this.setSize(350, 200);
+			this.setResizable(false);
 			//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setVisible(true);
 			this.setLocationRelativeTo(null);
 			this.setTitle("비밀번호 변경");
-			
-			complete.addActionListener(this);
 		} 
 			
 		@Override
@@ -475,4 +475,181 @@ public class UserLogin {
 		}
 
 	}
+	
+	class SignUpFrame extends JFrame implements ActionListener, KeyListener{	//인증코드 창
+		private JLabel idLabel = new JLabel("아이디: ");
+		private JLabel pwLabel = new JLabel("비밀번호:");
+		private JLabel checkPwLabel = new JLabel("비밀번호 확인:");
+		private JLabel emailLabel = new JLabel("이메일:");
+		private JPasswordField pwField = new JPasswordField(12);
+		private JPasswordField repwField = new JPasswordField(12);
+		private JTextField id = new JTextField(12);
+		private JTextField email = new JTextField(12);
+		private JButton checkId = new JButton("중복검사");
+		private JButton signUpBt = new JButton("가입하기");
+
+		private JPanel idPanel = new JPanel();//id
+		private JPanel pwPanel = new JPanel();//pw
+		private JPanel checkpwPanel = new JPanel();//checkpw
+		private JPanel emailPanel = new JPanel();//email
+		private JPanel signbtPanel = new JPanel();//sign
+		
+		private boolean existId = true;	//false 이여야 중복되지 않는다는 뜻!
+		private boolean comparePw = false;
+		SignUpFrame(){
+			idPanel.setLayout(null);
+			idLabel.setBounds(50, 25, 70, 15);
+			idPanel.add(idLabel);
+			id.setBounds(145, 25, 138, 21);
+			idPanel.add(id);
+			pwPanel.setLayout(null);
+			pwLabel.setBounds(50, 25, 83, 15);
+			pwPanel.add(pwLabel);
+			pwField.setBounds(145, 25, 138, 21);
+			pwPanel.add(pwField);
+			checkpwPanel.setLayout(null);
+			checkPwLabel.setBounds(50, 25, 93, 15);
+			checkpwPanel.add(checkPwLabel);
+			repwField.setBounds(145, 25, 138, 21);
+			checkpwPanel.add(repwField);
+			emailPanel.setLayout(null);
+			emailLabel.setBounds(50, 25, 83, 15);
+			emailPanel.add(emailLabel);
+			email.setBounds(145, 25, 138, 21);
+			emailPanel.add(email);
+			signbtPanel.add(signUpBt);
+			
+			email.setText("(선택)비밀번호 분실시 필수!");
+			
+			this.setLayout(new GridLayout(0,1));
+			this.add(idPanel);
+			checkId.setFont(new Font("굴림", Font.PLAIN, 11));
+			checkId.setBounds(295, 25, 81, 23);
+			idPanel.add(checkId);
+			this.add(pwPanel);
+			this.add(checkpwPanel);
+			this.add(emailPanel);
+			this.add(signbtPanel);
+			
+			email.addActionListener(this);
+			checkId.addActionListener(this);
+			signUpBt.addActionListener(this);
+			
+			this.setResizable(false);
+			this.setSize(400, 360);
+			this.setVisible(true);
+			this.setLocationRelativeTo(null);
+			this.setTitle("회원가입");
+		} 
+			
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getSource()==email) { email.setText("");	}
+			
+			if(e.getSource()==checkId) {
+				existId = idOrPwCheck(id.getText());	//중복될경우 true
+				if(!existId) {	//일치치하지 않을때
+					JOptionPane.showMessageDialog(null, "사용 가능한 아이디입니다!");
+				}else { JOptionPane.showMessageDialog(null, "이미 존재하는 아이디입니다!"); }
+			}
+			
+			if(e.getSource()==signUpBt) {
+				if(!existId) {
+					if(pwField.getText().equals(repwField.getText())) {
+						signUp(id.getText(),pwField.getText(),email.getText());
+					}else {	JOptionPane.showMessageDialog(null, "두 비밀번호가 일치하지 않습니다!");	}
+				}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
+			}
+			//JOptionPane.showMessageDialog(null, "비밀번호를 입력하십시오.");
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	}
+	
+	class FindIdOrPwFrame extends JFrame implements ActionListener, KeyListener{	//인증코드 창
+		
+		private JLabel label = new JLabel("");
+		private JTextField contents = new JTextField(12);
+		private JPanel panel = new JPanel();
+		private JButton confirm = new JButton("확인");
+		private String mode;
+		
+		FindIdOrPwFrame(String mode){
+			this.mode = mode;	//find id or pw
+			this.setLayout(new GridLayout(3,1));
+			
+			if(mode.equals("ID")) {
+				label.setText("가입 당시의 이메일을 입력해 주세요.");
+				this.setTitle("아이디 찾기");
+			}else if(mode.equals("PW")) {
+				label.setText("비밀번호를 찾고자 하는 아이디를 입력해 주세요.");
+				this.setTitle("비밀번호 찾기");
+			}else {
+				JOptionPane.showMessageDialog(null, "모드 설정 값 오류!");
+				this.dispose();
+			}
+			panel.add(contents);
+			panel.add(confirm);
+			label.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			this.add(label);
+			this.add(panel);
+			this.setSize(300, 170);
+			
+			this.setVisible(true);
+			this.setLocationRelativeTo(null);
+			this.setResizable(false);
+			
+			confirm.addActionListener(this);
+			confirm.addKeyListener(this);
+			contents.addKeyListener(this);   
+		} 
+			
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getSource()==confirm) {	//press confirm button
+				if(mode.equals("ID")) { findId(contents.getText());	this.dispose();}
+				else {	findPwAndReset(contents.getText());	this.dispose();}
+			}
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if(mode.equals("ID")) { findId(contents.getText());	this.dispose();}
+				else {	findPwAndReset(contents.getText());	this.dispose();}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	}
+	
+	
 }
