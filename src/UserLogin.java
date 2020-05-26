@@ -103,15 +103,20 @@ public class UserLogin {
 	}
 	
 	
-	public void login(String username, String password) {
+	public boolean login(String username, String password) {
 		this.username = username;
 		//this.password = password;//gui전임시
 		
 		if(idOrPwCheck(username,password)) {
 			System.out.println("로그인 성공");
+			JOptionPane.showMessageDialog(null, "로그인 성공!");
+			return true;	//로그인성공
 		}else {
 			System.out.println("실패");
+			JOptionPane.showMessageDialog(null, "로그인 실패!");
+			return false;
 		}
+		
 	}
 	
 	public void signUp(String id,String pw,String email) {  //@이메일에 따라 저장
@@ -214,6 +219,12 @@ public class UserLogin {
 
 	}
 	/******************************이거 합치는 것도? +비밀번호 찾아 주는거 까지*****************/
+	public void findData(String mode) {
+		if(mode.equals("ID")) {	new FindIdOrPwFrame("ID");
+		}else if(mode.equals("PW")) { new FindIdOrPwFrame("PW");
+		}else { System.out.println("잘못된 입력");}
+	}
+	
 	public void findId(String email) {	//이메일이 등록된 경우만 가능
 		String id = bringSignUpId(email);
 		if(id !=null) {//이메일 일치 여부 확인
@@ -239,7 +250,6 @@ public class UserLogin {
 	
 	
 	public boolean VerificationCode(String id) {	//찾을 id 입력받은후
-		System.out.println("이메일로 인증코드발송");
 		SendEmail mail = new SendEmail();
 		String email = bringEmail(id);
 		String verificationCode="";
@@ -394,8 +404,7 @@ public class UserLogin {
 			// TODO Auto-generated method stub	
 		}
 	}
-	public void aa() { new NewPassword("sdf"); }
-	public void tmp() { new CodeFrame("1"); }
+
 	class NewPassword extends JFrame implements ActionListener, KeyListener{	//인증코드 창
 		private JLabel text1 = new JLabel("   새 비밀번호: ");
 		private JLabel text2 = new JLabel("비밀번호 확인:");
@@ -479,8 +488,8 @@ public class UserLogin {
 		}
 
 	}
-	public void ss() { new SignUpFrame(); }
-	class SignUpFrame extends JFrame implements ActionListener, KeyListener, MouseListener, FocusListener{	//인증코드 창
+	public void getSignUpFrame() { new SignUpFrame(); }
+	private class SignUpFrame extends JFrame implements ActionListener, KeyListener, MouseListener, FocusListener{	//인증코드 창
 		private JLabel idLabel = new JLabel("아이디: ");
 		private JLabel pwLabel = new JLabel("비밀번호:");
 		private JLabel checkPwLabel = new JLabel("비밀번호 확인:");
