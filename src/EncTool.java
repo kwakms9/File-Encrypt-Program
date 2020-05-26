@@ -166,10 +166,11 @@ public class EncTool {
 		}
 	}
 
-	static void decryptAESCTR() {
+	static void decryptAESCTR(String path) {
 
 		try {
-
+			inFile = path;
+			outFile = path;
 			RandomAccessFile rawDataFromFile = new RandomAccessFile(inFile, "r");
 			byte[] inBytes = new byte[(int) rawDataFromFile.length()];
 			rawDataFromFile.read(inBytes);
@@ -245,8 +246,10 @@ public class EncTool {
 		}
 	}
 
-	static void encryptAESCTR() {
+	static void encryptAESCTR(String path) {
 		try {
+			inFile = path;
+			outFile = path;
 			// Open and read the input file
 			// N.B. this program reads the whole file into memory,
 			// not good for large programs!
