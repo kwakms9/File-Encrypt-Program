@@ -10,11 +10,14 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.text.DateFormat;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class calender {
-	
+	static int intDateNum;
+	static String calendate;
 	private final int[] maxDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	public static void getMonthGalendar(){
@@ -26,6 +29,8 @@ public class calender {
 	 }
 	  
 	  public static void getMonthGalendar(int intYear, int intMmonth){ //현재 달력 출력 매소드
+		 calenderFrame aa= new calenderFrame();
+		  
 		  Calendar cal = Calendar.getInstance();
 	      
 	      int thisYear = cal.get(Calendar.YEAR); //현재 년
@@ -39,16 +44,13 @@ public class calender {
 	      int endDate = cal.getActualMaximum(Calendar.DATE); //달의 마지막일 얻기
 	      
 	     
-	      int nowYear = cal.get(Calendar.YEAR);
-	      int nowMonth = cal.get(Calendar.MONTH);
-
-	      System.out.println("===================== "+ nowYear+"년  " + (nowMonth+1) + "월 ==================");
+	       System.out.println("===================== "+ thisYear+"년  " + (thisMonth+1) + "월 ==================");
 	      //요일명 출력
 	      System.out.println(" 일\t 월\t 화\t 수\t 목\t 금\t 토\t");  
 	      System.out.println("====================================================");
 	      //1일이 시작되는 이전의 요일 공백으로 채우기 
 	      
-	      int intDateNum = 1; //출력할 date를 저장할 변수
+	      intDateNum = 1; //출력할 date를 저장할 변수
 	  
 	      for (int i = 1; intDateNum <= endDate ; i++) {   // 출력한 Date 변수(intDateNum)가 1일부터 마지막일이 될때까지 반복.         
 	          
@@ -60,7 +62,12 @@ public class calender {
 	              intDateNum++; //출력할 date 증가
 	          }            
 	          if(i%7==0) System.out.println(); // i가 7의배수가 되면 줄바꿈
-	         
+	          if(i>6) {
+	        	  aa.jdata[i].setText(""+intDateNum);
+	        	  calendate = (thisYear+"-"+thisMonth+"-"+intDateNum);
+	        	  
+               }
+	          
 	      }
 	      System.out.println();
 	  }
@@ -112,7 +119,7 @@ public class calender {
 	    System.out.println(" 일\t 월\t 화\t 수\t 목\t 금\t 토\t");
 	    
 	    System.out.println("====================================================");
-	    int intDateNum = 1; //출력할 date를 저장할 변수
+	    intDateNum = 1; //출력할 date를 저장할 변수
 	    
 	    for (int i = 1; intDateNum <= maxDays ; i++) {   // 출력한 Date 변수(intDateNum)가 1일부터 마지막일이 될때까지 반복.         
 	        
@@ -131,7 +138,7 @@ public class calender {
 	  }
 	  
 	 
-	 String creatDate;
+	 static String creatDate;
 	  
     public void FileCreationDate(){// 파일생성날짜 메소드
 
@@ -153,7 +160,7 @@ public class calender {
 			}
 		}
 	  
-    public void filesave() {//암호파일저장 메소드
+    public static void filesave() {//암호파일저장 메소드
         
     	PrintWriter out = null;
     	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
@@ -173,9 +180,9 @@ public class calender {
      		  }
     		} 
     	}
+    	
     
-    
-    public void Enfilelist() {//암호파일 전체 출력 메소드
+    public static void Enfilelist() {//암호파일 전체 출력 메소드
     	BufferedReader in = null;
     	String savePath = System.getProperty("user.home") + "\\Documents\\암호파일";
     	try {

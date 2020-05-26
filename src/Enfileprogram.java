@@ -13,7 +13,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JInternalFrame;
 import java.awt.event.ActionEvent;
 
-public class Enfileprogram extends JFrame  implements ActionListener{
+public class Enfileprogram extends JFrame  implements ActionListener{// 로그인 이후 GUI
 	private JTextField textField;
 	private JTextField textField_1;
 	JLabel label1 = new JLabel("암호화 할 파일 선택");
@@ -79,19 +79,29 @@ public class Enfileprogram extends JFrame  implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == button1) {
-			}
-		else if (e.getSource() == button2) {
+		if (e.getSource() == button1) {//파일선택
+			FileMenu.main(null);
 		}
-		else if (e.getSource() == button3) {
+		else if (e.getSource() == button2) {//암호화
+			EncTool.encryptAESCTR();
+			calender.filesave();
 		}
-		else if (e.getSource() == button4) {
+		else if (e.getSource() == button3) {//파일선택
+			FileMenu.main(null);
 		}
-		else if (e.getSource() == button5) {
+		else if (e.getSource() == button4) {//복호화
+			EncTool.decryptAESCTR();
+			
 		}
-		else if (e.getSource() == button6) {
+		else if (e.getSource() == button5) {//달력프레임
+			calenderFrame.main(null);
+			
 		}
-		else if (e.getSource() == button7) {
+		else if (e.getSource() == button6) {//암호화리스트
+			calender.Enfilelist();
+		}
+		else if (e.getSource() == button7) {//내정보프레임
+			MyInformation.main(null);
 		}
 	}
 	

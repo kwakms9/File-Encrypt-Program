@@ -7,7 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import java.awt.Font;
 
-public class loginFrame extends JFrame  implements ActionListener{
+public class loginFrame extends JFrame  implements ActionListener{ //프로그램 첫 실행 GUI
 	private JTextField textField;
 	JLabel label1 = new JLabel("아이디");
 	JLabel label2 = new JLabel("비밀번호");
@@ -68,5 +68,7 @@ public class loginFrame extends JFrame  implements ActionListener{
 		}
 	}
 	
-
+	public static void main(String[] args) {
+		new loginFrame();
+	}
 }

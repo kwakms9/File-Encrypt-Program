@@ -53,4 +53,8 @@ public class MyInformation extends JFrame  implements ActionListener{ // ³»Á¤º¸ 
 		}
 	}
 
+	public static void main(String[] args) {
+		new MyInformation();
+	}
+
 }

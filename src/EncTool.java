@@ -166,7 +166,7 @@ public class EncTool {
 		}
 	}
 
-	private static void decryptAESCTR() {
+	static void decryptAESCTR() {
 
 		try {
 
@@ -245,7 +245,7 @@ public class EncTool {
 		}
 	}
 
-	private static void encryptAESCTR() {
+	static void encryptAESCTR() {
 		try {
 			// Open and read the input file
 			// N.B. this program reads the whole file into memory,
