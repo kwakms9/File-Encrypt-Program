@@ -24,9 +24,10 @@ public class EncTool {
 
 	static String inFile = "plainText.txt";
 	static String outFile = "cipherText.enc";
-	static String hexKey = "3eafda76cd8b015641cb946708675423";
+ static String hexKey = "3eafda76cd8b015641cb946708675423";
 	static String keyStore;
 	static String keyName;
+	 String userKey;
 
 	private static void encryptRSA() {
 		try {
@@ -347,5 +348,23 @@ public class EncTool {
 					+ Character.digit(s.charAt(i + 1), 16));
 		}
 		return data;
+	}
+	public void makenNewHexString(String id) {	//아이디마다 키값다르게
+		char hexArr[] = hexKey.toCharArray();
+		int hexlen = hexArr.length;
+		char idArr[] = id.toCharArray();
+		String newKey="";
+		String tmp ="";
+		int i=0;
+		
+		for(i=0; i<idArr.length;i++) {	//문자들을 16진수로 변환
+			tmp += Integer.toHexString(Character.getNumericValue(idArr[i]));
+		}
+		
+		for(i=0;i<hexlen-tmp.length();i++) {	//key앞까지 채우기
+			newKey+=hexArr[i];
+		}		
+		newKey+=tmp;	//key합치기
+		userKey = newKey;
 	}
 }
