@@ -241,11 +241,19 @@ public class UserLogin {
 	
 	
 	public void findPwAndReset(String id) {
-		boolean result = false;
-		result=VerificationCode(id);	//인증코드 결과
-		if(result) {
-			new NewPassword(id);
-		}
+		Thread pwThread =new Thread()
+		{
+			@Override
+			public void run()
+			{
+				boolean result = false;
+				result=VerificationCode(id);	//인증코드 결과
+				if(result) {
+					new NewPassword(id);
+				}
+			}
+		};
+		pwThread.start();
 	}
 	
 	
@@ -256,7 +264,7 @@ public class UserLogin {
 		
 		if(email != null ) {//이메일 일치 여부 확인
 			for(int j=0;j<6;j++) {
-			verificationCode+=""+(int)Math.random()*10;
+				verificationCode+=""+(int)(Math.random()*10);
 			}
 			mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
 			System.out.println("당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
@@ -285,8 +293,8 @@ public class UserLogin {
 	public boolean frameTimer(int sec,CodeFrame window) {
 		long starTime;
 		SimpleDateFormat format = new SimpleDateFormat ( "mm:ss");
-		int currentTime;
 		starTime=System.currentTimeMillis();
+		int currentTime;
 		do {
 			currentTime = (int)(System.currentTimeMillis()-starTime)/1000;
 			window.time.setText("  남은시간 "+format.format((sec-currentTime)*1000));
@@ -297,8 +305,8 @@ public class UserLogin {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}while(currentTime<=sec&&!(window.closeWin));	//종료버튼 누를시
-		window.dispose();
+		}while(currentTime<=sec&&!(window.closeWin));
+		window.dispose();	//창닫기
 		return window.recognized;
 	}
 
@@ -695,7 +703,7 @@ public class UserLogin {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource()==confirm) {	//press confirm button
 				if(mode.equals("ID")) { findId(contents.getText());	this.dispose();}
-				else {	findPwAndReset(contents.getText());	this.dispose();}
+				else {	this.dispose();findPwAndReset(contents.getText());	}
 			}
 		}
 
@@ -709,7 +717,7 @@ public class UserLogin {
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode()==KeyEvent.VK_ENTER) {
 				if(mode.equals("ID")) { findId(contents.getText());	this.dispose();}
-				else {	findPwAndReset(contents.getText());	this.dispose();}
+				else {	this.dispose();findPwAndReset(contents.getText());	}
 			}
 		}
 
