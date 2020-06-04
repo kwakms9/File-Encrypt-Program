@@ -45,7 +45,7 @@ public class UserLogin {
 	private String username = null; // null 이면 logout 상태
 	//private String password = null;
 	private String savePath = System.getProperty("user.home") + "\\Documents\\FileEncrytProgram";//정보저장 경로
-	private String divUnit = "##";
+	private String divUnit = "#%&&!#";
 	//out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.bin")));//true없으므로 덮어쓰기
 	private String userData[][];
 	String tmpUserData = "";
@@ -554,6 +554,7 @@ public class UserLogin {
 			this.add(signbtPanel);
 			
 			id.addFocusListener(this);
+			id.addKeyListener(this);
 			email.addMouseListener(this);
 			checkId.addActionListener(this);
 			signUpBt.addActionListener(this);
@@ -565,6 +566,15 @@ public class UserLogin {
 			this.setTitle("회원가입");
 		} 
 			
+		public boolean specialCharCheck(String compare) {
+			char special[] = "~!@#$%^&*()+|`=\\[]{};:'\".<>/?".toCharArray();
+			for(char spchar:special) {
+				if(compare.contains(spchar+"")) {	//특수문자가 있을경우
+					return true;
+				}
+			}
+			return false;	//특수문자 없음
+		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource()==checkId) {
@@ -572,9 +582,13 @@ public class UserLogin {
 					useId = id.getText();
 					existId = idOrPwCheck(useId);	//중복될경우 true
 					if(!existId) {	//일치치하지 않을때
-						JOptionPane.showMessageDialog(null, "사용 가능한 아이디입니다!");
-						checkId.setText("사용가능");
-						checkId.setEnabled(false);
+						if (!specialCharCheck(id.getText())) {	//특수문자 검사
+							JOptionPane.showMessageDialog(null, "사용 가능한 아이디입니다!");
+							checkId.setText("사용가능");
+							checkId.setEnabled(false);
+						}else {
+							JOptionPane.showMessageDialog(null, "특수문자를 제외해주십시오!");
+						}
 					}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
 				}else {	JOptionPane.showMessageDialog(null, "아이디를 입력해주십시오!");	}
 			}
@@ -601,7 +615,13 @@ public class UserLogin {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			
+			if(e.getSource()==id && !existId) {
+				if(!useId.equals(id.getText())) {//중복검사후 
+					existId = true;
+					checkId.setText("중복검사");
+					checkId.setEnabled(true);
+				}
+			}
 		}
 
 		@Override
