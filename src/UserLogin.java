@@ -45,8 +45,7 @@ public class UserLogin {
 	private String username = null; // null 이면 logout 상태
 	//private String password = null;
 	private String savePath = System.getProperty("user.home") + "\\Documents\\FileEncrytProgram";//정보저장 경로
-	private String divUnit = "#%&&!#";
-	//out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.bin")));//true없으므로 덮어쓰기
+	private String divUnit = "#%&&!#";	//데이터 구분자
 	private String userData[][];
 	String tmpUserData = "";
 	/**********저장형식 id##pw##email\n************/
@@ -153,7 +152,6 @@ public class UserLogin {
 				}
 				out.write(tmp+"\n");
 			}
-			//out.write(tmp);	//줄넘김 없으니까 추가
 			out.flush();
 			out.close();
 			}catch(IOException e) { e.printStackTrace(); }
@@ -179,13 +177,13 @@ public class UserLogin {
 		}
 		return false;	//못찾았을경우
 	}
-	/******************************이거랑*****************/
+	/******************************가입된 이메일과 일치한 id가져오기*****************/
 	public String bringSignUpId(String email) {//이메일로 id 가져오기
 		String tmp="";
 		for(int i=0;i<userData.length;i++) {
 			if(userData[i].length == 3) {	//이메일 있는게 길이가 3
 				if(email.equals(userData[i][2])) {//이메일 일치 여부 확인
-					tmp+= userData[i][0]+" ";
+					tmp+= userData[i][0]+" ";//한개의 이메일로 2개 이상 가입했을수도있으므로
 				}
 			}
 		}
@@ -200,7 +198,7 @@ public class UserLogin {
 		for(int i=0;i<userData.length;i++) {
 			if(userData[i].length == 3) {	//이메일 있는게 길이가 3
 				if(id.equals(userData[i][0])) {//이메일 일치 여부 확인
-					return userData[i][2];	//한개의 이메일로 2개 이상 가입했을수도있으므로
+					return userData[i][2];	
 				}
 			}
 		}
@@ -218,7 +216,24 @@ public class UserLogin {
 		}
 
 	}
-	/******************************이거 합치는 것도? +비밀번호 찾아 주는거 까지*****************/
+	
+	
+	private void setEmail(String id,String newEmail) {	//이메일 설명 및 저장
+		for(int i=0;i<userData.length;i++) {
+			if(userData[i].length == 3) {	//이메일 있는게 길이가 3
+				if(id.equals(userData[i][0])) {//이메일 일치 여부 확인
+					userData[i][2] = newEmail;
+					saveUpdatefile();
+					fileLoad();
+					break;
+				}
+			}
+		}
+
+	}
+	
+	
+	/******************************아이디나 비밀번호 찾기 *****************/
 	public void findData(String mode) {
 		if(mode.equals("ID")) {	new FindIdOrPwFrame("ID");
 		}else if(mode.equals("PW")) { new FindIdOrPwFrame("PW");
@@ -240,7 +255,7 @@ public class UserLogin {
 	}
 	
 	
-	public void findPwAndReset(String id) {
+	public void findPwAndReset(String id) {	//비밀번호 찾기 및 재설정
 		Thread pwThread =new Thread()
 		{
 			@Override
@@ -256,6 +271,40 @@ public class UserLogin {
 		pwThread.start();
 	}
 	
+	
+	public void logedInPwReset(String id,String pw) {	//로그인후 비밀번호 변경
+		if(idOrPwCheck(id,pw)) {	//일치하면
+			new NewPassword(id);	//비밀번호 변
+		}
+	}
+	
+	
+	public void emailReset(String id,String newEmail) {	//이메일 재설정
+		Thread emailThread =new Thread()
+		{
+			@Override
+			public void run()
+			{
+				boolean result = false;
+				result=VerificationCode(id);	//인증코드 결과
+				if(result) {
+					String email =bringEmail(id);
+					if(email == null) {	//이메일이 없다면 배열 공간이 부족하므로 새로 할당
+						for(int i=0;i<userData.length;i++) {
+							if(id.equals(userData[i][0])) {//이메일 일치 여부 확인
+								userData[i]=(userData[i][0]+divUnit+userData[i][1]+divUnit+"temp").split(divUnit);	//칸 다시 확장
+							}
+						}
+					}
+					setEmail(id,newEmail);	//이메일 설정
+					JOptionPane.showMessageDialog(null, "이메일이 등록되었습니다!");
+				}
+			}
+		};
+		emailThread.start();
+			
+		
+	}
 	
 	public boolean VerificationCode(String id) {	//찾을 id 입력받은후
 		SendEmail mail = new SendEmail();
@@ -286,9 +335,6 @@ public class UserLogin {
 		
 	}
 	
-	public void comfirmCode(String verificationCode) {		/*******GUi에서 인증확인구연하기*********완료*/
-		
-	}
 	
 	public boolean frameTimer(int sec,CodeFrame window) {
 		long starTime;
