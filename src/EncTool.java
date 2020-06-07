@@ -2,6 +2,9 @@ import java.io.Console;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -9,7 +12,10 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.Certificate;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -22,9 +28,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class EncTool {
 
+	static String endate;
 	static String inFile = "plainText.txt";
 	static String outFile = "cipherText.enc";
- static String hexKey = "3eafda76cd8b015641cb946708675423";
+	static String hexKey = "3eafda76cd8b015641cb946708675423";
 	static String keyStore;
 	static String keyName;
 	 String userKey;
@@ -198,6 +205,38 @@ public class EncTool {
 		}
 
 	}
+	
+	static void decryptAESCTR(String inPath, String outPath) {
+
+		try {
+			inFile = inPath;
+			outFile = outPath;
+			RandomAccessFile rawDataFromFile = new RandomAccessFile(inFile, "r");
+			byte[] inBytes = new byte[(int) rawDataFromFile.length()];
+			rawDataFromFile.read(inBytes);
+			rawDataFromFile.close();
+
+			byte[] ivBytes = Arrays.copyOfRange(inBytes, 0, 16);
+
+			SecretKeySpec key = new SecretKeySpec(hexStringToByteArray(hexKey), "AES");
+			IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+
+			Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
+
+			byte[] cipherText = Arrays.copyOfRange(inBytes, 16, inBytes.length + 1);
+
+			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+
+			byte[] original = cipher.doFinal(cipherText);
+			FileOutputStream outToFile = new FileOutputStream(outFile);
+			outToFile.write(original);
+			outToFile.close();
+
+		} catch (Exception e) {
+			System.out.println("doh " + e);
+		}
+
+	}
 
 	private static void decryptAESCCM() {
 
@@ -281,6 +320,53 @@ public class EncTool {
 		} catch (Exception e) {
 			System.out.println("doh " + e);
 		}
+	}
+	
+	static void encryptAESCTR(String inPath, String outPath) {
+		try {
+			inFile = inPath;
+			outFile = outPath;
+			// Open and read the input file
+			// N.B. this program reads the whole file into memory,
+			// not good for large programs!
+			RandomAccessFile rawDataFromFile = new RandomAccessFile(inFile, "r");
+			byte[] plainText = new byte[(int) rawDataFromFile.length()];
+			rawDataFromFile.read(plainText);
+			rawDataFromFile.close();
+
+			// Set up the AES key & cipher object in CTR mode
+			SecretKeySpec secretKeySpec = new SecretKeySpec(hexStringToByteArray(hexKey), "AES");
+			Cipher encAESCTRcipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
+			SecureRandom random = new SecureRandom();
+			byte iv[] = new byte[16];
+			random.nextBytes(iv);
+			IvParameterSpec ivSpec = new IvParameterSpec(iv);
+			encAESCTRcipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
+
+			// Encrypt the data
+			byte[] cipherText = encAESCTRcipher.doFinal(plainText);
+
+			// Write file to disk
+			System.out.println("Openning file to write: " + outFile);
+			FileOutputStream outToFile = new FileOutputStream(outFile);
+			outToFile.write(iv);
+			outToFile.write(cipherText);
+			outToFile.close();
+			System.out.println(inFile + " encrypted as " + outFile);
+		} catch (Exception e) {
+			System.out.println("doh " + e);
+		}
+		
+		Calendar cal = Calendar.getInstance();
+        int year = cal.get ( cal.YEAR );
+		int month = cal.get ( cal.MONTH ) + 1 ;
+        int date = cal.get ( cal.DATE ) ;
+        endate = (year + "-" + month + "-" + date);
+        System.out.println(endate);
+
+        
+       
+	
 	}
 
 	private static void encryptAESCCM() {
