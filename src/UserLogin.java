@@ -52,17 +52,17 @@ public class UserLogin {
 	UserLogin() {	//로그인을 위한 파일 불러오기
 		
 		File Folder = new File(savePath);
-		File data = new File(savePath+"\\data.txt");
+		File data = new File(savePath+"\\data.tmp");
 		if (!Folder.exists()) {
 			try {
 				Folder.mkdir();	//폴더가 없을 경우 생성
-				data.createNewFile(); // 파일 생성
+				data.createNewFile(); // 파일 생성				
 			} catch (Exception e) {
 				e.getStackTrace();
 			}
 		}else if(!data.exists()) {//폴더있지만 파일 없을시
 			try {
-				data.createNewFile();
+				data.createNewFile();	
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -78,27 +78,35 @@ public class UserLogin {
 		try {
 			userData =null;	//기존에 있던 데이터 지우기
 			BufferedReader in = null;
-			in = new BufferedReader(new FileReader(savePath+"\\data.txt"));
+			EncTool.decryptAESCTR(savePath+"\\data.enc", savePath+"\\data.tmp");	//암호화된 정보 복호화
 			
+			in = new BufferedReader(new FileReader(savePath+"\\data.tmp"));	
 			String temp;
-			while((temp=in.readLine()) != null) { tmpUserData+=temp+"\n"; }	//사용자 정보 읽기
+			while((temp=in.readLine()) != null) { if(temp.contains(divUnit)) tmpUserData+=temp+"\n"; }	//사용자 정보 읽기
 			//System.out.println(userData);
+			in.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("파일없는 초기상태");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			System.gc();
+			new File(savePath+"\\data.tmp").delete();	//파일로드가 끝나면 노출된 데이터 파기
 		} 
 		
 		if(!tmpUserData.equals("")) {//파일이 비었는지 확인
+			//tmpUserData=tmpUserData.substring(0, tmpUserData.length()-1);
 			String splitTmp[] =tmpUserData.split("\n");
 			userData = new String[splitTmp.length][];	//사용자 수만큼 길이 할당
-			
+			System.out.println(userData.length);
 			for(int i=0;i<splitTmp.length;i++) {
+				System.out.println(splitTmp[i]);
 				userData[i] = splitTmp[i].split(divUnit);//아이디 비번으로 분리  0 id, 1 pw, 2 email
 			}
 		}
+		
 	}
 	
 	
@@ -120,73 +128,120 @@ public class UserLogin {
 	
 	public void signUp(String id,String pw,String email) {  //@이메일에 따라 저장
 		if(email.contains("@")) {
-			savefile(id+divUnit+pw+divUnit+email);
+			saveUpdatefile(id+divUnit+pw+divUnit+email);
 		}else {
-			savefile(id+divUnit+pw);
+			saveUpdatefile(id+divUnit+pw);
 		}
 			fileLoad();	//reload file
 	}
 	
-	
-	public void savefile(String str) {
+	/*
+	public void savefile(String str) {	//append
 		try {
+			EncTool.decryptAESCTR(savePath+"\\data.enc", savePath+"\\data.tmp");
 			PrintWriter out = null;
-			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.txt",true)));//true면 append
-			out.write(str+"\n");	//줄넘김 없으니까 추가
+			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp",true)));//true면 append
+			out.write(str+"$$$");	//줄넘김 없으니까 추가
 			out.flush();
 			out.close();
-			}catch(IOException e) { e.printStackTrace(); }
+			EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
+			}catch(IOException e) { e.printStackTrace(); 
+			}finally {
+				System.gc();
+				//new File(savePath+"\\data.tmp").delete();	//암호화후 제거
+			} 
+	}*/
+	
+	public void saveUpdatefile(String str) {//파일 update 덮어쓰기
+		try {
+			PrintWriter out = null;
+			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp")));//true=없으므로 덮어쓰기, true면 append
+			String tmp=null;
+			try {
+				for(int i=0;i<userData.length;i++) {
+					tmp="";
+					for(int j=0;j<userData[i].length;j++){
+						tmp+=userData[i][j];
+						if(j<1) {	tmp+=divUnit;
+						}else if (userData[i].length==3&&j==1){ tmp+=divUnit; }	//이메일 있는 것일 경우 하나더 
+					}
+					out.write(tmp+"\n"+str+"\n");
+				}
+			}catch(NullPointerException e) {}	//아무 아이디도  없는상태
+			out.flush();
+			out.close();
+			EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
+			new File(savePath+"\\data.tmp").delete();	//암호화 후 제거
+			}catch(IOException e) { e.printStackTrace(); 
+			}finally {
+				System.gc();
+				new File(savePath+"\\data.tmp").delete();	//암호화후 제거
+			} 
 	}
 	
-	public void saveUpdatefile() {//파일 update
+	public void saveUpdatefile() {//파일 update 덮어쓰기
 		try {
 			PrintWriter out = null;
-			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.txt")));//true=없으므로 덮어쓰기, true면 append
+			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp")));//true=없으므로 덮어쓰기, true면 append
 			String tmp=null;
-			for(int i=0;i<userData.length;i++) {
-				tmp="";
-				for(int j=0;j<userData[i].length;j++){
-					tmp+=userData[i][j];
-					if(j<1) {	tmp+=divUnit;
-					}else if (userData[i].length==3&&j==1){ tmp+=divUnit; }	//이메일 있는 것일 경우 하나더 
+			try {
+				for(int i=0;i<userData.length;i++) {
+					tmp="";
+					for(int j=0;j<userData[i].length;j++){
+						tmp+=userData[i][j];
+						if(j<1) {	tmp+=divUnit;
+						}else if (userData[i].length==3&&j==1){ tmp+=divUnit; }	//이메일 있는 것일 경우 하나더 
+					}
+					out.write(tmp+"\n");
 				}
-				out.write(tmp+"\n");
-			}
+			}catch(NullPointerException e) {}	//아무 아이디도  없는상태
 			out.flush();
 			out.close();
-			}catch(IOException e) { e.printStackTrace(); }
+			EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
+			new File(savePath+"\\data.tmp").delete();	//암호화 후 제거
+			}catch(IOException e) { e.printStackTrace(); 
+			}finally {
+				System.gc();
+				new File(savePath+"\\data.tmp").delete();	//암호화후 제거
+			} 
 	}
 	
 	public boolean idOrPwCheck(String username) {	//아이디만 있는지 확인
-		for(int i=0;i<userData.length;i++) {
-			if(userData[i][0].equals(username)) {
-				System.out.println("있는아이디 ID");
-				return true;	//있다
-				}
-		}
-		return false;	//못찾았을경우 중복되지 않는 아이디
+		try {
+			for(int i=0;i<userData.length;i++) {
+				if(userData[i][0].equals(username)) {
+					System.out.println("있는아이디 ID");
+					return true;	//있다
+					}
+			}
+		} catch(NullPointerException e) {}	//아무 아이디도  없는상태
+			return false;	//못찾았을경우 중복되지 않는 아이디
 	}
 	
 	public boolean idOrPwCheck(String username, String password) {	//아이 비번 확인
-		for(int i=0;i<userData.length;i++) {
-			if(userData[i][0].equals(username)) {
-				if(userData[i][1].equals(password)) {
-					return true;
+		try {
+			for(int i=0;i<userData.length;i++) {
+				if(userData[i][0].equals(username)) {
+					if(userData[i][1].equals(password)) {
+						return true;
+					}
 				}
 			}
-		}
+		} catch(NullPointerException e) {}	//아무 아이디도  없는상태
 		return false;	//못찾았을경우
 	}
 	/******************************가입된 이메일과 일치한 id가져오기*****************/
 	public String bringSignUpId(String email) {//이메일로 id 가져오기
 		String tmp="";
-		for(int i=0;i<userData.length;i++) {
-			if(userData[i].length == 3) {	//이메일 있는게 길이가 3
-				if(email.equals(userData[i][2])) {//이메일 일치 여부 확인
-					tmp+= userData[i][0]+" ";//한개의 이메일로 2개 이상 가입했을수도있으므로
+		try {
+			for(int i=0;i<userData.length;i++) {
+				if(userData[i].length == 3) {	//이메일 있는게 길이가 3
+					if(email.equals(userData[i][2])) {//이메일 일치 여부 확인
+						tmp+= userData[i][0]+" ";//한개의 이메일로 2개 이상 가입했을수도있으므로
+					}
 				}
 			}
-		}
+		} catch(NullPointerException e) {}	//아무 아이디도  없는상태
 		if(!tmp.equals(""))	
 		{
 			return tmp;	// 아이디들 보내기
@@ -635,7 +690,7 @@ public class UserLogin {
 						}else {
 							JOptionPane.showMessageDialog(null, "특수문자를 제외해주십시오!");
 						}
-					}else {	JOptionPane.showMessageDialog(null, "아이디 중복검사를 해주십시오!");	}
+					}else {	JOptionPane.showMessageDialog(null, "이미 있는 아이디입니다!");	}
 				}else {	JOptionPane.showMessageDialog(null, "아이디를 입력해주십시오!");	}
 			}
 			
