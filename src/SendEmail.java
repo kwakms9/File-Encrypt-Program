@@ -9,8 +9,8 @@ import java.util.*;
 
 
 public class SendEmail {
-    private String username = null; // null 이면 logout 상태
-    private String password = null;
+    private String username = "simin1kim1@gmail.com"; // null 이면 logout 상태
+    private String password = "123654as!";
     String yesorno;
 	Scanner scan = new Scanner(System.in);
 	boolean success = false;

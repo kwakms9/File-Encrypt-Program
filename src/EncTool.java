@@ -31,10 +31,10 @@ public class EncTool {
 	static String endate;
 	static String inFile = "plainText.txt";
 	static String outFile = "cipherText.enc";
-	static String hexKey = "3eafda76cd8b015641cb946708675423";
+	static private String hexKey = "3eafda76cd8b015641cb946708675423";
 	static String keyStore;
 	static String keyName;
-	 String userKey;
+	static boolean success = false;
 
 	private static void encryptRSA() {
 		try {
@@ -174,7 +174,7 @@ public class EncTool {
 		}
 	}
 
-	static void decryptAESCTR(String path) {
+	static void decryptAESCTRPrivate(String path,String prkey) {
 
 		try {
 			inFile = path;
@@ -186,7 +186,7 @@ public class EncTool {
 
 			byte[] ivBytes = Arrays.copyOfRange(inBytes, 0, 16);
 
-			SecretKeySpec key = new SecretKeySpec(hexStringToByteArray(hexKey), "AES");
+			SecretKeySpec key = new SecretKeySpec(hexStringToByteArray(prkey), "AES");
 			IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
 
 			Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
@@ -286,8 +286,9 @@ public class EncTool {
 		}
 	}
 
-	static void encryptAESCTR(String path) {
+	static void encryptAESCTRPrivate(String path,String prkey) {
 		try {
+			
 			inFile = path;
 			outFile = path;
 			// Open and read the input file
@@ -299,7 +300,7 @@ public class EncTool {
 			rawDataFromFile.close();
 
 			// Set up the AES key & cipher object in CTR mode
-			SecretKeySpec secretKeySpec = new SecretKeySpec(hexStringToByteArray(hexKey), "AES");
+			SecretKeySpec secretKeySpec = new SecretKeySpec(hexStringToByteArray(prkey), "AES");
 			Cipher encAESCTRcipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
 			SecureRandom random = new SecureRandom();
 			byte iv[] = new byte[16];
@@ -316,10 +317,17 @@ public class EncTool {
 			outToFile.write(iv);
 			outToFile.write(cipherText);
 			outToFile.close();
+			success = true;
 			System.out.println(inFile + " encrypted as " + outFile);
 		} catch (Exception e) {
 			System.out.println("doh " + e);
+			success = false;
 		}
+		
+		
+        
+       
+	
 	}
 	
 	static void encryptAESCTR(String inPath, String outPath) {
@@ -356,17 +364,6 @@ public class EncTool {
 		} catch (Exception e) {
 			System.out.println("doh " + e);
 		}
-		
-		Calendar cal = Calendar.getInstance();
-        int year = cal.get ( cal.YEAR );
-		int month = cal.get ( cal.MONTH ) + 1 ;
-        int date = cal.get ( cal.DATE ) ;
-        endate = (year + "-" + month + "-" + date);
-        System.out.println(endate);
-
-        
-       
-	
 	}
 
 	private static void encryptAESCCM() {
@@ -435,7 +432,7 @@ public class EncTool {
 		}
 		return data;
 	}
-	public void makenNewHexString(String id) {	//아이디마다 키값다르게
+	public static String makenNewHexString(String id) {	//아이디마다 키값다르게 
 		char hexArr[] = hexKey.toCharArray();
 		int hexlen = hexArr.length;
 		char idArr[] = id.toCharArray();
@@ -451,6 +448,6 @@ public class EncTool {
 			newKey+=hexArr[i];
 		}		
 		newKey+=tmp;	//key합치기
-		userKey = newKey;
+		return newKey;
 	}
 }

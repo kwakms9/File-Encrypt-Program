@@ -1,5 +1,3 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -13,23 +11,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -43,37 +33,50 @@ import javax.swing.SwingConstants;
 
 public class UserLogin {
 	private String username = null; // null 이면 logout 상태
-	//private String password = null;
 	private String savePath = System.getProperty("user.home") + "\\Documents\\FileEncrytProgram";//정보저장 경로
 	private String divUnit = "#%&&!#";	//데이터 구분자
 	private String userData[][];
 	String tmpUserData = "";
-	/**********저장형식 id##pw##email\n************/
+	/**********저장형식 divUnit************/
 	UserLogin() {	//로그인을 위한 파일 불러오기
 		
 		File Folder = new File(savePath);
-		File data = new File(savePath+"\\data.tmp");
+		File data = new File(savePath+"\\data.enc");
 		if (!Folder.exists()) {
 			try {
 				Folder.mkdir();	//폴더가 없을 경우 생성
-				data.createNewFile(); // 파일 생성				
+				PrintWriter out = null;
+				new File(savePath+"\\data.tmp").createNewFile();
+				out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp")));
+				out.write("test"+divUnit+"test");
+				out.flush();
+				out.close();
+				EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화		
 			} catch (Exception e) {
 				e.getStackTrace();
 			}
 		}else if(!data.exists()) {//폴더있지만 파일 없을시
 			try {
-				data.createNewFile();	
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				PrintWriter out = null;
+				new File(savePath+"\\data.tmp").createNewFile();
+				out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp")));
+				out.write("test"+divUnit+"test");
+				out.flush();
+				out.close();
+				EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
+			}catch(IOException e) { e.printStackTrace(); 
+			}finally {
+				System.gc();
+				new File(savePath+"\\data.tmp").delete();	//암호화후 제거
+			} 
+			
 		}
 		
 		fileLoad();
 		
 	}
-	
-	
+
+
 	public void fileLoad() {
 		try {
 			userData =null;	//기존에 있던 데이터 지우기
@@ -97,22 +100,23 @@ public class UserLogin {
 		} 
 		
 		if(!tmpUserData.equals("")) {//파일이 비었는지 확인
-			//tmpUserData=tmpUserData.substring(0, tmpUserData.length()-1);
 			String splitTmp[] =tmpUserData.split("\n");
 			userData = new String[splitTmp.length][];	//사용자 수만큼 길이 할당
-			System.out.println(userData.length);
+			//System.out.println(userData.length);
 			for(int i=0;i<splitTmp.length;i++) {
-				System.out.println(splitTmp[i]);
+				//System.out.println(splitTmp[i]);
 				userData[i] = splitTmp[i].split(divUnit);//아이디 비번으로 분리  0 id, 1 pw, 2 email
 			}
 		}
 		
 	}
 	
-	
+	public String getUsername() {
+		return username;
+	}
+
 	public boolean login(String username, String password) {
 		this.username = username;
-		//this.password = password;//gui전임시
 		
 		if(idOrPwCheck(username,password)) {
 			System.out.println("로그인 성공");
@@ -135,22 +139,6 @@ public class UserLogin {
 			fileLoad();	//reload file
 	}
 	
-	/*
-	public void savefile(String str) {	//append
-		try {
-			EncTool.decryptAESCTR(savePath+"\\data.enc", savePath+"\\data.tmp");
-			PrintWriter out = null;
-			out = new PrintWriter(new BufferedWriter(new FileWriter(savePath+"\\data.tmp",true)));//true면 append
-			out.write(str+"$$$");	//줄넘김 없으니까 추가
-			out.flush();
-			out.close();
-			EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
-			}catch(IOException e) { e.printStackTrace(); 
-			}finally {
-				System.gc();
-				//new File(savePath+"\\data.tmp").delete();	//암호화후 제거
-			} 
-	}*/
 	
 	public void saveUpdatefile(String str) {//파일 update 덮어쓰기
 		try {
@@ -159,14 +147,16 @@ public class UserLogin {
 			String tmp=null;
 			try {
 				for(int i=0;i<userData.length;i++) {
-					tmp="";
+					
 					for(int j=0;j<userData[i].length;j++){
+						tmp="";
 						tmp+=userData[i][j];
 						if(j<1) {	tmp+=divUnit;
 						}else if (userData[i].length==3&&j==1){ tmp+=divUnit; }	//이메일 있는 것일 경우 하나더 
 					}
-					out.write(tmp+"\n"+str+"\n");
+					out.write(tmp+"\n");
 				}
+				out.write(str+"\n");
 			}catch(NullPointerException e) {}	//아무 아이디도  없는상태
 			out.flush();
 			out.close();
@@ -198,7 +188,6 @@ public class UserLogin {
 			out.flush();
 			out.close();
 			EncTool.encryptAESCTR(savePath+"\\data.tmp", savePath+"\\data.enc");	//암호화
-			new File(savePath+"\\data.tmp").delete();	//암호화 후 제거
 			}catch(IOException e) { e.printStackTrace(); 
 			}finally {
 				System.gc();
@@ -341,7 +330,7 @@ public class UserLogin {
 			public void run()
 			{
 				boolean result = false;
-				result=VerificationCode(id);	//인증코드 결과
+				result=VerificationCode(id,newEmail);	//인증코드 결과
 				if(result) {
 					String email =bringEmail(id);
 					if(email == null) {	//이메일이 없다면 배열 공간이 부족하므로 새로 할당
@@ -364,6 +353,35 @@ public class UserLogin {
 	public boolean VerificationCode(String id) {	//찾을 id 입력받은후
 		SendEmail mail = new SendEmail();
 		String email = bringEmail(id);
+		String verificationCode="";
+		
+		if(email != null ) {//이메일 일치 여부 확인
+			for(int j=0;j<6;j++) {
+				verificationCode+=""+(int)(Math.random()*10);
+			}
+			mail.sender(email, "File-Encrypt-Program", "인증코드: "+verificationCode);
+			System.out.println("당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
+			JOptionPane.showMessageDialog(null, "당신의 이메일로 인증코드가 전송되었습니다. 유효시간:3분");
+			CodeFrame confirmWindow =new CodeFrame(verificationCode);
+			verificationCode = null;	//인증코드 초기화
+			
+			if(!frameTimer(180,confirmWindow)) {	//시간 내에 입력하지 못 했을 경우 3분
+				JOptionPane.showMessageDialog(null, "인증코드 유효시간이 초과하였습니다.");
+				System.out.println("인증코드 유효기간이 초과하였습니다.");
+				return false;	// fail
+			}
+			System.out.println("finish");
+			return true;	//success
+		}
+		System.out.println("해당 아이디에 등록된 이메일이 없습니다.");
+		JOptionPane.showMessageDialog(null, "해당 아이디에 등록된 이메일이 없습니다.");
+		return false;
+		
+	}
+	
+	public boolean VerificationCode(String id,String newEmail) {	//찾을 id 입력받은후 새이메일
+		SendEmail mail = new SendEmail();
+		String email = newEmail;
 		String verificationCode="";
 		
 		if(email != null ) {//이메일 일치 여부 확인
@@ -432,9 +450,7 @@ public class UserLogin {
 			this.setLayout(new GridLayout(3,1));
 			this.add(time);
 			this.add(panel);
-			//this.pack();
 			this.setSize(300, 170);
-			//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setVisible(true);
 			this.setLocationRelativeTo(null);
 			this.setTitle("인증코드 확인");
@@ -544,7 +560,6 @@ public class UserLogin {
 			
 			this.setSize(350, 200);
 			this.setResizable(false);
-			//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setVisible(true);
 			this.setLocationRelativeTo(null);
 			this.setTitle("비밀번호 변경");

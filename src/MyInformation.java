@@ -3,36 +3,46 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Label;
 
-public class MyInformation extends JFrame  implements ActionListener{ // ³»Á¤º¸ GUI
+public class MyInformation extends JFrame  implements ActionListener{ // ï¿½ê¶¡ï¿½ì ™è¹‚ï¿½ GUI
 	private JTextField textField;
 	private JTextField textField_1;
-	JLabel label1 = new JLabel("ÀÌ¸ŞÀÏ ");
-	JLabel label2 = new JLabel("ºñ¹Ğ¹øÈ£ ");
-	JButton button1 = new JButton("ÀÌ¸ŞÀÏº¯°æ");
-	JButton button2 = new JButton("ºñ¹Ğ¹øÈ£º¯°æ");
+	JPasswordField passwordField;
+	JLabel label1 = new JLabel("ì•„ì´ë””");
+	JLabel label2 = new JLabel("ì´ë©”ì¼ ");
+	JLabel label3 = new JLabel("ë¹„ë°€ë²ˆí˜¸");
+	JButton button1 = new JButton("ì´ë©”ì¼ë³€ê²½");
+	JButton button2 = new JButton("ë¹„ë°€ë²ˆí˜¸ë³€ê²½");
+	private JTextField textField_2;
+	private UserLogin loadData;
 	
-	public MyInformation() {
-		setTitle("ÆÄÀÏ¾ÏÈ£ÇÁ·Î±×·¥");
+	public MyInformation(UserLogin loadData) {
+		this.loadData = loadData;
+		setTitle("íŒŒì¼ì•”í˜¸í”„ë¡œê·¸ë¨");
+		setSize(600, 500); 
+		setVisible(true);
 		getContentPane().setLayout(null);
 		
 		
-		label1.setBounds(63, 78, 62, 18);
+		label1.setBounds(63, 38, 62, 18);//ï¿½ë¸˜ï¿½ì” ï¿½ëµ’
 		getContentPane().add(label1);
 		
-		textField = new JTextField();
-		textField.setBounds(133, 75, 116, 24);
+		textField = new JTextField(loadData.getUsername());
+		textField.setBounds(133, 37, 116, 24);
 		getContentPane().add(textField);
 		textField.setColumns(10);
 		
 		
-		label2.setBounds(63, 130, 72, 18);
+		label2.setBounds(63, 77, 72, 18);// ï¿½ì” ï§ë¶¿ì”ª
 		getContentPane().add(label2);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(133, 127, 116, 24);
+		textField_1 = new JTextField(loadData.bringEmail(loadData.getUsername()));
+		textField_1.setBounds(133, 75, 116, 24);
 		getContentPane().add(textField_1);
 		textField_1.setColumns(10);
 		
@@ -41,20 +51,31 @@ public class MyInformation extends JFrame  implements ActionListener{ // ³»Á¤º¸ 
 		getContentPane().add(button1);
 		
 		
-		button2.setBounds(263, 126, 127, 27);
+		button2.setBounds(261, 107, 127, 27);
 		getContentPane().add(button2);
+		
+		
+		label3.setBounds(63, 113, 57, 15);//é®ê¾¨ï¿½è¸°ëŠìƒ‡
+		getContentPane().add(label3);
+		this.setLocationRelativeTo(null);
+		passwordField = new JPasswordField();
+		passwordField.setBounds(133, 109, 116, 24);
+		getContentPane().add(passwordField);
+		passwordField.setColumns(10);
+		button1.addActionListener(this);
+		button2.addActionListener(this);	
+		
+
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == button1) {
+			JOptionPane.showMessageDialog(null, "ì¸ì¦ì½”ë“œ ì „ì†¡ì¤‘!");
+			loadData.emailReset(loadData.getUsername(), textField_1.getText());
 			}
 		else if (e.getSource() == button2) {
+			loadData.logedInPwReset(loadData.getUsername(), passwordField.getText());
 		}
 	}
-
-	public static void main(String[] args) {
-		new MyInformation();
-	}
-
 }

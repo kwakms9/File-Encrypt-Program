@@ -3,15 +3,13 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-public class testmain {
+public class FileEncryptProgramMain {
 
 	public static void main(String[] args) {
-		System.out.println(System.getProperty("user.home")+"\\Documents");
-		//CodeThread a = new CodeThread(10);
-		//a.start();
-		new UserLogin().VerificationCode("");
+		new loginFrame();	
 	}
 	
 /*

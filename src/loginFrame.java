@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-import java.awt.Font;
 
 public class loginFrame extends JFrame  implements ActionListener, KeyListener{ //프로그램 첫 실행 GUI
 	private JTextField id = new JTextField();
@@ -77,8 +76,9 @@ public class loginFrame extends JFrame  implements ActionListener, KeyListener{ 
 		{
 			if(!password.getText().equals("")) {
 				if(loadData.login(id.getText(), password.getText())) {// 로그인하기
-					this.dispose();
+					this.dispose();	//창 종료
 					/********성공했을 경우 메뉴로*********/
+					new Enfileprogram(loadData);
 				}	
 			}else {
 				JOptionPane.showMessageDialog(null, "비밀번호를 입력하세요!");
