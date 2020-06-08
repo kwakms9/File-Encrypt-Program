@@ -9,8 +9,8 @@ import java.util.*;
 
 
 public class SendEmail {
-    private String username = "simin1kim1@gmail.com"; // null ÀÌ¸é logout »óÅÂ
-    private String password = "123654as!";
+    private String username = "@gmail.com"; // null ì´ë©´ logout ìƒíƒœ
+    private String password = "";
     String yesorno;
 	Scanner scan = new Scanner(System.in);
 	boolean success = false;
@@ -26,24 +26,24 @@ public class SendEmail {
       }
     
     public void menu() {
-	        System.out.println("»ç¿ëÇÏ½Ç ¿É¼ÇÀ» ¼±ÅÃÇØ ÁÖ½Ê½Ã¿À.");
+	        System.out.println("ì‚¬ìš©í•˜ì‹¤ ì˜µì…˜ì„ ì„ íƒí•´ ì£¼ì‹­ì‹œì˜¤.");
 	        System.out.println("=========================");
-	        if(username==null) { System.out.println("1.·Î±×ÀÎ"); }
-	        else { System.out.println("1.´Ù¸¥°èÁ¤À¸·Î ·Î±×ÀÎ"); }
-	        System.out.println("2.¸ŞÀÏ ÀÛ¼º");
-	        System.out.println("3.·Î±×¾Æ¿ô");
-	        System.out.println("4.Á¾·á");
+	        if(username==null) { System.out.println("1.ë¡œê·¸ì¸"); }
+	        else { System.out.println("1.ë‹¤ë¥¸ê³„ì •ìœ¼ë¡œ ë¡œê·¸ì¸"); }
+	        System.out.println("2.ë©”ì¼ ì‘ì„±");
+	        System.out.println("3.ë¡œê·¸ì•„ì›ƒ");
+	        System.out.println("4.ì¢…ë£Œ");
 	        System.out.println("========================="); 
-	        System.out.printf("ÀÔ·Â: ");
+	        System.out.printf("ì…ë ¥: ");
 	        
         }
     public void login() {
     	do {
     		username=checkId();
     		if(guimode==false) {
-		    	System.out.printf("ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇÏ½Ã¿À: ");
+		    	System.out.printf("ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì‹œì˜¤: ");
 		    	password = scan.next();
-		    	clearScreen();	//È­¸é ¿Ã¸®±â
+		    	clearScreen();	//í™”ë©´ ì˜¬ë¦¬ê¸°
     		}
 	    	tryLogin();
 	    	if(success == true) {
@@ -81,7 +81,7 @@ public class SendEmail {
     		username = null;
     		password = null;
     	}else {
-    		System.out.println("ÇöÀç ·Î±×¾Æ¿ô »óÅÂÀÔ´Ï´Ù.");
+    		System.out.println("í˜„ì¬ ë¡œê·¸ì•„ì›ƒ ìƒíƒœì…ë‹ˆë‹¤.");
     		System.out.println("");
     	}
     }
@@ -91,7 +91,7 @@ public class SendEmail {
     	
     	do {
     		if(guimode==false) {
-    			System.out.printf("±¸±Û ÀÌ¸ŞÀÏÀ» ÀÔ·ÂÇÏ½Ã¿À: ");
+    			System.out.printf("êµ¬ê¸€ ì´ë©”ì¼ì„ ì…ë ¥í•˜ì‹œì˜¤: ");
     			username = scan.next();
     			}
         	
@@ -100,22 +100,22 @@ public class SendEmail {
         	}
         	tmp = username.split("@");
     		
-	    	if(tmp[1].equalsIgnoreCase("gmail.com")) {	//Æ÷ÅĞ ÁÖ¼Ò È®ÀÎ
+	    	if(tmp[1].equalsIgnoreCase("gmail.com")) {	//í¬í„¸ ì£¼ì†Œ í™•ì¸
 	    		username = tmp[0]+"@gmail.com";
 	    		break;
 	    	}else {
-	    		System.out.println("»ç¿ëÇÒ ¼ö ¾ø´Â ÀÌ¸ŞÀÏÁÖ¼ÒÀÔ´Ï´Ù.");
-	    		System.out.println("ÀÔ·ÂµÈ Æ÷ÅĞÁÖ¼Ò: "+tmp[1]);
+	    		System.out.println("ì‚¬ìš©í•  ìˆ˜ ì—†ëŠ” ì´ë©”ì¼ì£¼ì†Œì…ë‹ˆë‹¤.");
+	    		System.out.println("ì…ë ¥ëœ í¬í„¸ì£¼ì†Œ: "+tmp[1]);
 	    	}
     	}while(!guimode);
     	return username;
     }
     public void tryLogin() {
     	String receiver;
-    	receiver = "test@lagsixtome.com";	//¾ø´Â ÀÌ¸ŞÀÏ
+    	receiver = "test@lagsixtome.com";	//ì—†ëŠ” ì´ë©”ì¼
     	sender(receiver,"","");
     	if(success) {
-    		System.out.println("·Î±×ÀÎ ¼º°ø");
+    		System.out.println("ë¡œê·¸ì¸ ì„±ê³µ");
     	}
     	
     }
@@ -152,11 +152,11 @@ public class SendEmail {
             success = true;
 
         } catch (AuthenticationFailedException e) {
-        	System.out.println("·Î±×ÀÎ ½ÇÆĞ!\n¾ÆÀÌµğ¿Í ºñ¹Ğ¹øÈ£¸¦ ´Ù½Ã È®ÀÎÇØ º¸½Ê½Ã¿À.");
+        	System.out.println("ë¡œê·¸ì¸ ì‹¤íŒ¨!\nì•„ì´ë””ì™€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ë‹¤ì‹œ í™•ì¸í•´ ë³´ì‹­ì‹œì˜¤.");
         	success = false;
             //e.printStackTrace();
         } catch(Exception e) {
-        	System.out.println("¸ŞÀÏ Àü¼ÛÁß ¿¡·¯ ¹ß»ı!");
+        	System.out.println("ë©”ì¼ ì „ì†¡ì¤‘ ì—ëŸ¬ ë°œìƒ!");
         	success = false;
         }
     }
@@ -167,43 +167,43 @@ public class SendEmail {
     	
     	if(username!=null) {
 	    	while(true) {
-		    	System.out.printf("º¸³¾»ç¶÷ÀÇ ÀÌ¸ŞÀÏ ÁÖ¼Ò¸¦ ÀÔ·ÂÇÏ½Ê½Ã¿À.\n: ");
+		    	System.out.printf("ë³´ë‚¼ì‚¬ëŒì˜ ì´ë©”ì¼ ì£¼ì†Œë¥¼ ì…ë ¥í•˜ì‹­ì‹œì˜¤.\n: ");
 		    	scan.nextLine();
-		    	String receiver [] = scan.nextLine().replace(" ", "").split(","); //ÀÌ¸ŞÀÏ ÁÖ¼Òµé ÀÔ·Â
+		    	String receiver [] = scan.nextLine().replace(" ", "").split(","); //ì´ë©”ì¼ ì£¼ì†Œë“¤ ì…ë ¥
 		    	
-		    	System.out.printf("¸ŞÀÏÀÇ Á¦¸ñÀ» ÀÔ·ÂÇÏ½Ê½Ã¿À.\n: ");
+		    	System.out.printf("ë©”ì¼ì˜ ì œëª©ì„ ì…ë ¥í•˜ì‹­ì‹œì˜¤.\n: ");
 		    	title = scan.nextLine();
-		    	System.out.println("³»¿ëÀ» ÀÔ·ÂÇÏ½Ã¿À.\n: ");
+		    	System.out.println("ë‚´ìš©ì„ ì…ë ¥í•˜ì‹œì˜¤.\n: ");
 				content = scan.nextLine();
-				System.out.println("Àü¼ÛÇÏ½Ã°Ú½À´Ï±î?(Y:Àü¼Û N:Ãë¼Ò):");
+				System.out.println("ì „ì†¡í•˜ì‹œê² ìŠµë‹ˆê¹Œ?(Y:ì „ì†¡ N:ì·¨ì†Œ):");
 				yesorno = scan.next();
-				if(yesorno.equalsIgnoreCase("Y") || yesorno.contentEquals("Àü¼Û")) {
-					System.out.println("¸ŞÀÏ Àü¼ÛÁß...");
+				if(yesorno.equalsIgnoreCase("Y") || yesorno.contentEquals("ì „ì†¡")) {
+					System.out.println("ë©”ì¼ ì „ì†¡ì¤‘...");
 					for(int i=0;i<receiver.length;i++) {
 						System.out.println(receiver[i]);
 						sender(receiver[i],title,content);
 					}
-					System.out.println("¸ğµç ¸ŞÀÏÀ» ¹ß¼ÛÇÏ¿´½À´Ï´Ù. ´õ º¸³»½Ã°Ú½À´Ï±î?(Y:Àü¼Û N:µ¹¾Æ°¡±â)");
+					System.out.println("ëª¨ë“  ë©”ì¼ì„ ë°œì†¡í•˜ì˜€ìŠµë‹ˆë‹¤. ë” ë³´ë‚´ì‹œê² ìŠµë‹ˆê¹Œ?(Y:ì „ì†¡ N:ëŒì•„ê°€ê¸°)");
 					yesorno = scan.next();
-					if(!(yesorno.equalsIgnoreCase("Y") || yesorno.contentEquals("Àü¼Û"))) { break; }
+					if(!(yesorno.equalsIgnoreCase("Y") || yesorno.contentEquals("ì „ì†¡"))) { break; }
 					
 				}else {
-					System.out.println("¸ŞÀÏ Àü¼ÛÀÌ Áß´ÜµÇ¾ú½À´Ï´Ù. Ã³À½À¸·Î ÀÌµ¿");
+					System.out.println("ë©”ì¼ ì „ì†¡ì´ ì¤‘ë‹¨ë˜ì—ˆìŠµë‹ˆë‹¤. ì²˜ìŒìœ¼ë¡œ ì´ë™");
 				}
 	    	}
     	}else {
-    		System.out.println("ÇöÀç ·Î±×ÀÎ »óÅÂ°¡ ¾Æ´Õ´Ï´Ù.");
+    		System.out.println("í˜„ì¬ ë¡œê·¸ì¸ ìƒíƒœê°€ ì•„ë‹™ë‹ˆë‹¤.");
     		System.out.println("");
     	}
     }
     
     public String guiMessage(String receiverarry, String title, String content) {
     	String errreceiver="";
-    	String receiver [] = receiverarry.replace(" ", "").split(","); //ÀÌ¸ŞÀÏ ÁÖ¼Òµé ÀÔ·Â
-		System.out.println("¸ŞÀÏ Àü¼ÛÁß...");
+    	String receiver [] = receiverarry.replace(" ", "").split(","); //ì´ë©”ì¼ ì£¼ì†Œë“¤ ì…ë ¥
+		System.out.println("ë©”ì¼ ì „ì†¡ì¤‘...");
 		
 		for(int i=0;i<receiver.length;i++) {
-			sender(receiver[i],title,content);	//Àü¼Û
+			sender(receiver[i],title,content);	//ì „ì†¡
 			if(success==false) {
 				errreceiver+=receiver[i]+" ";
 			}
